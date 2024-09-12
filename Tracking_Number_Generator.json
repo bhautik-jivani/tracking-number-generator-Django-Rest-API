@@ -1,0 +1,91 @@
+{
+	"info": {
+		"_postman_id": "30f134ae-564c-49cb-9f48-343f11d91065",
+		"name": "Tracking Number Generator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10284266"
+	},
+	"item": [
+		{
+			"name": "Next Tracking Number",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{projecturl}}/next-tracking-number/?origin_country_id={{$randomCountryCode}}&destination_country_id={{$randomCountryCode}}&weight={{$randomInt}}&customer_id={{$randomUUID}}&customer_name={{$randomFullName}}&customer_slug={{$randomLoremSlug}}",
+					"host": [
+						"{{projecturl}}"
+					],
+					"path": [
+						"next-tracking-number",
+						""
+					],
+					"query": [
+						{
+							"key": "origin_country_id",
+							"value": "{{$randomCountryCode}}"
+						},
+						{
+							"key": "destination_country_id",
+							"value": "{{$randomCountryCode}}"
+						},
+						{
+							"key": "weight",
+							"value": "{{$randomInt}}"
+						},
+						{
+							"key": "customer_id",
+							"value": "{{$randomUUID}}"
+						},
+						{
+							"key": "customer_name",
+							"value": "{{$randomFullName}}"
+						},
+						{
+							"key": "customer_slug",
+							"value": "{{$randomLoremSlug}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Tracking Details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{projecturl}}/tracking-details/",
+					"host": [
+						"{{projecturl}}"
+					],
+					"path": [
+						"tracking-details",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Tracking Details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{projecturl}}/tracking-details/1/",
+					"host": [
+						"{{projecturl}}"
+					],
+					"path": [
+						"tracking-details",
+						"1",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

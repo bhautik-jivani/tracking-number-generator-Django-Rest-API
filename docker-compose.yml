@@ -1,0 +1,89 @@
+services:
+  backend_web:
+    build:
+      context: ./tracking_number_generator_project
+      dockerfile: Dockerfile
+    container_name: tracking_number_generator_project_backend
+    volumes:
+      - .:/tracking_number_generator_project
+      - static_volume:/tracking_number_generator_project/tracking_number_generator_project/static
+      - media_volume:/tracking_number_generator_project/tracking_number_generator_project/media
+      - log_volume:/var/log
+      - gunicorn_volume:/var/log/gunicorn
+      - nginx_volume:/var/log/nginx
+    networks:
+      - tracking_number_generator_project_network
+    env_file:
+      - ./.env.local
+    depends_on:
+      - postgres_db
+    restart: always
+    command: gunicorn tracking_number_generator_project.wsgi:application --bind 0.0.0.0:8000 --access-logfile '/var/log/gunicorn/access.log' --error-logfile '/var/log/gunicorn/error.log'
+
+  postgres_db:
+    image: postgres:latest
+    container_name: tracking_number_generator_project_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env.local
+    networks:
+      - tracking_number_generator_project_network
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin", "-d", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: tracking_number_generator_project_pgadmin
+    env_file:
+      - ./.env.local
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres_db
+    networks:
+      - tracking_number_generator_project_network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: tracking_number_generator_project_nginx
+    ports:
+      - "81:81"
+    networks:
+      - tracking_number_generator_project_network
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - nginx_volume:/var/log/nginx
+      - static_volume:/tracking_number_generator_project/tracking_number_generator_project/static
+      - media_volume:/tracking_number_generator_project/tracking_number_generator_project/media
+    depends_on:
+      - backend_web
+    restart: always
+
+networks:
+  tracking_number_generator_project_network:
+    name: tracking_number_generator_project_network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: tracking_number_generator_project_db
+  pgadmin_data:
+    name: tracking_number_generator_project_pgadmin
+  static_volume:
+    name: tracking_number_generator_project_static
+  media_volume:
+    name: tracking_number_generator_project_media
+  log_volume:
+    name: tracking_number_generator_project_log
+  gunicorn_volume:
+    name: tracking_number_generator_project_gunicorn
+  nginx_volume:
+    name: tracking_number_generator_project_nginx
